@@ -23,7 +23,7 @@ layer 2 = complex actors such as player
 
 solid_actors = {}
 actor = {} --all actors in world
-
+paused = true
 -- make an actor
 -- and add to global collection
 -- x,y means center of the actor
@@ -270,7 +270,11 @@ end
 
 function _update()
 	
-	
+	if(paused==true) then
+		if(btn(2, 1)) paused = false
+		return
+	end
+
  pl.cool-=1
  
  control_player(pl)
@@ -295,14 +299,24 @@ function _draw()
  cls()
  
  --test if map has empty tiles:
- rectfill(0, 0, 127,127,1)
+ --rectfill(0, 0, 127,127,3)
  
  -- level1
  map(0,0,0,0,16,16)
  foreach(actor,draw_actor)
  
+ rect(5, 40, 122, 90, 7)
+ rectfill(6,41,121,89,1)
+ rect(7, 42, 120, 88, 7)
+ textshadow("> press 'e' to proceed", 20, 80, 7)
+ textshadow("you broke your all your\nfingers.", 15, 50, 7)
+ textshadow("(hp -1 on every shot)", 15, 65, 8)
 end
 
+function textshadow(text, x, y, col)
+	print (text, x-1, y+1, 0) -- shadow
+	print (text, x, y, col) -- main
+end
 __gfx__
 0000000000777700777777777777777700000000888e0000bbb30000000000000000000000000000888e000000cccc0000000000000000000000000000000000
 0000000007000070777777777000000700000000080800000b0b0000000000000000000000000000080800000c7777c000777700007777000077770000777700
