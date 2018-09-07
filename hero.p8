@@ -6,6 +6,8 @@ __lua__
  sfx0 - footstep
  sfx1 - bomb
 
+	sfx20-25 shoot
+	
  sfx56 - message / text
  sfx57 - danger
  sfx58 - heal
@@ -39,7 +41,7 @@ function make_actor(x, y)
  a.spr = 16
  a.frame = 0
  a.t = 0
- a.inertia = 0.6
+ a.drag = 0.6
  a.bounce  = 0
  a.frames=2
  
@@ -55,40 +57,6 @@ function make_actor(x, y)
  return a
 end
 
-function _init()
-	
-	gun0={}
-	gun0.cool=5
-	gun0.snd = 20
-	
-	gun1={}
-	gun1.cool=0.5
-	gun1.snd=5
-	
- -- make player top left
- pl = make_actor(2,2)
- pl.active=true
- pl.spr = 1
- pl.layer = 2
-	pl.g = gun0 --weapon selection
-	pl.cool = 5
- add(pl, solid_actors)
- 
- -- make bullets
- bullets=make_actor(5,5)
- bullets.i=1
- bullets.length=20
- for i=1,bullets.length do
- 	local b = make_actor(5,5)
- 	b.layer=1
-  b.spr = 40
-  b.inertia=1
-  b.w = 0.11
-  b.h = 0.11
-  bullets[i] = b
- end
- 
-end
 
 -- for any given point on the
 -- map, true if there is wall
@@ -201,12 +169,12 @@ function move_actor(a)
    a.dy *= -a.bounce
   end
   
-  -- apply inertia
+  -- apply drag
   -- set dx,dy to zero if you
-  -- don't want inertia
+  -- don't want drag
   
-  a.dx *= a.inertia
-  a.dy *= a.inertia
+  a.dx *= a.drag
+  a.dy *= a.drag
   
   -- advance one frame every
   -- time actor moves 1/4 of
@@ -221,19 +189,6 @@ function move_actor(a)
   
  end
 end
-function spawn(pool, x, y)
-	
-	local temp = pool[pool.i]
-	temp.active = true
-	temp.x=x
-	temp.y=y
-
-	
-	pool.i+=1
-	if (pool.i == pool.length) pool.i=1
-	
-	return temp
-end
 function control_player(pl)
 
  -- how fast to accelerate
@@ -246,11 +201,11 @@ function control_player(pl)
 	
 	if(pl.cool<0) then
  	if(btn(1)) then
- 		local b = spawn(bullets,pl.x, pl.y)
+ 		local b = bullets.spawn(pl.x, pl.y)
  		b.dx=0.3
  		pl.cool = pl.g.cool
  	elseif(btn(0)) then
- 	local b = spawn(bullets,pl.x, pl.y)
+ 	local b = bullets.spawn(pl.x, pl.y)
  		b.dx=-0.3
  		pl.cool = pl.g.cool
  	end
@@ -287,7 +242,7 @@ rectfill(0, 5, 127, pl.cool, 8)
   local sx = (a.x * 8) - 4
   local sy = (a.y * 8) - 4
   if(a.layer == 2) then
-  	sspr(8, 0, 8, 8,sx+8, sy, -8, 8)
+  	sspr(8, 0, 8, 8,sx, sy, 8, 8)
   else
    spr(a.spr + a.frame, sx, sy)
   end
@@ -318,6 +273,74 @@ end
 function textshadow(text, x, y, col)
 	print (text, x-1, y+1, 0) -- shadow
 	print (text, x, y, col) -- main
+end
+-->8
+
+function _init()
+	
+	
+ pool={
+ 	spawn = function(x, y)
+ 		
+  	local temp = pool[pool.i]
+  	temp.active = true
+  	temp.x=x
+  	temp.y=y
+  
+  	
+  	pool.i+=1
+  	if (pool.i == pool.length) pool.i=1
+  	
+  	return temp
+ 	end,
+ 	make = function(origin)
+ 	 for i=1,pool.length do
+   	local o = make_actor(5,5)
+   	o.layer=origin.layer
+    o.spr =origin.spr
+    o.drag=origin.drag
+    o.w =origin.w
+    o.h =origin.h
+    pool[i] = o
+   end
+  end
+ }
+ pool.i = 1
+ pool.length = 6
+ 
+ 
+ bul= make_actor(5,5)
+ bul.layer=1
+ bul.spr = 40
+ bul.drag=1
+ bul.w = 0.11
+ bul.h = 0.11
+ 
+ -- make bullets
+ bullets=pool
+ bullets.i=1
+ bullets.length=20
+ bullets.make(bul)
+ 
+ 
+ 
+ gun0={}
+ gun0.cool=5
+ gun0.snd = 20
+ 
+ gun1={}
+ gun1.cool=0.5
+ gun1.snd=5
+ 
+ pl = make_actor(2,2)
+ pl.active=true
+ pl.spr = 1
+ pl.layer = 2
+ pl.g = gun0 --weapon selection
+ pl.cool = 5
+ add(pl, solid_actors)
+
+
 end
 __gfx__
 0000000000777700777777777777777700000000888e0000bbb30000000000000000000000000000888e000000cccc0000000000000000000000000000000000
