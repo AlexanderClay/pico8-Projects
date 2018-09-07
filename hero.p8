@@ -1,6 +1,26 @@
 pico-8 cartridge // http://www.pico-8.com
 version 16
 __lua__
+--[[
+
+ sfx0 - footstep
+ sfx1 - bomb
+
+ sfx56 - message / text
+ sfx57 - danger
+ sfx58 - heal
+ sfx59 - danger
+ sfx60 - ambience
+ sfx61 - travel
+ sfx62 - danger-urgent 
+ sfx63 - danger-fast
+
+
+layer 1 = bullets
+layer 2 = complex actors such as player
+
+]]
+
 solid_actors = {}
 actor = {} --all actors in world
 
@@ -27,8 +47,8 @@ function make_actor(x, y)
  -- slightly less than 0.5 so
  -- that will fit through 1-wide
  -- holes.
- a.w = 0.45
- a.h = 0.45
+ a.w = 0.44
+ a.h = 0.44
  
  add(actor,a)
  
@@ -49,6 +69,7 @@ function _init()
  pl = make_actor(2,2)
  pl.active=true
  pl.spr = 1
+ pl.layer = 2
 	pl.g = gun0 --weapon selection
 	pl.cool = 5
  add(pl, solid_actors)
@@ -167,7 +188,7 @@ function move_actor(a)
   else   
    -- otherwise bounce
    a.dx *= -a.bounce
-   if(a.layer == 1) then
+   if(a.layer == 1) then -- bullets
    	a.active=false
    end
   end
@@ -227,12 +248,10 @@ function control_player(pl)
  	if(btn(1)) then
  		local b = spawn(bullets,pl.x, pl.y)
  		b.dx=0.3
- 		b.spr = 41
  		pl.cool = pl.g.cool
  	elseif(btn(0)) then
  	local b = spawn(bullets,pl.x, pl.y)
  		b.dx=-0.3
- 		b.spr = 42
  		pl.cool = pl.g.cool
  	end
  end
@@ -263,7 +282,11 @@ rectfill(0, 5, 127, pl.cool, 8)
 	if (a.active) then
   local sx = (a.x * 8) - 4
   local sy = (a.y * 8) - 4
-  spr(a.spr + a.frame, sx, sy)
+  if(a.layer == 2) then
+  	sspr(8, 0, 8, 8,sx+8, sy, -8, 8)
+  else
+   spr(a.spr + a.frame, sx, sy)
+  end
  end
 end
 
@@ -272,10 +295,7 @@ function _draw()
  cls()
  
  --test if map has empty tiles:
- rectfill(0, 0, 127,127,3)
- 
- -- draw mouse cursor
- spr(27, stat(32)-1, stat(33)-1)
+ rectfill(0, 0, 127,127,1)
  
  -- level1
  map(0,0,0,0,16,16)
