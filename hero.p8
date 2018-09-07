@@ -271,7 +271,7 @@ end
 function _update()
 	
 	if(paused==true) then
-		if(btn(2, 1)) paused = false
+		if(btnp(2, 1)) paused = false
 		return
 	end
 
@@ -305,12 +305,14 @@ function _draw()
  map(0,0,0,0,16,16)
  foreach(actor,draw_actor)
  
- rect(5, 40, 122, 90, 7)
- rectfill(6,41,121,89,1)
- rect(7, 42, 120, 88, 7)
- textshadow("> press 'e' to proceed", 20, 80, 7)
- textshadow("you broke your all your\nfingers.", 15, 50, 7)
- textshadow("(hp -1 on every shot)", 15, 65, 8)
+ if(paused) then
+  rect(5, 40, 122, 90, 7)
+  rectfill(6,41,121,89,1)
+  rect(7, 42, 120, 88, 7)
+  textshadow("> press 'e' to proceed", 20, 80, 7)
+  textshadow("you broke your all your\nfingers.", 15, 50, 7)
+  textshadow("(hp -1 on every shot)", 15, 65, 8)
+	end
 end
 
 function textshadow(text, x, y, col)
