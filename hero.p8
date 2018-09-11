@@ -485,6 +485,29 @@ function _init()
  tut.uh = 3
  add(use_actors, tut)
  
+ pl = make_actor(2,4)
+ pl.active=true
+ pl.spr = 1
+ pl.sprw = 8
+ pl.sprh = 8
+ pl.layer = 2
+ pl.g = gun1 --weapon selection
+ pl.cool = 5
+ pl.hp=100
+ pl.badhp=0
+ pl.yhp=0
+ pl.gdir=1
+ pl.update = function()
+ 
+ 	if(pl.dx > 0.03) then
+ 	 pl.gdir=-1
+ 	 elseif (pl.dx < -0.03) then
+ 	 pl.gdir=1.1
+		end
+ 	pl.dir = lerp(pl.dir, pl.gdir, 0.5)
+ end
+ add(solid_actors, pl)
+	
  chase = make_actor(6,6)
  chase.active=true
  chase.spr = 64
@@ -500,27 +523,17 @@ function _init()
  	chase.sprsw = 16 + sin(chase.x*0.8)*2
  	chase.sprsh = 16 + sin(chase.y)*2
  	
+ 	
  	if (pl.x > chase.x+0.1) then
- 		chase.dir = 1
- 	else chase.dir=-1 end
+ 		chase.gdir = 1
+ 	else chase.gdir=-1 end
+ 	chase.dir = lerp(chase.dir, chase.gdir, 0.5)
+ 	
  	 
  	chase.x = move2(chase.x,pl.x,0.1)
  	chase.y = move2(chase.y,pl.y,0.1)
  end
  
- pl = make_actor(2,4)
- pl.active=true
- pl.spr = 1
- pl.sprw = 8
- pl.sprh = 8
- pl.layer = 2
- pl.g = gun1 --weapon selection
- pl.cool = 5
- pl.hp=100
- pl.badhp=0
- pl.yhp=0
- add(solid_actors, pl)
-	
 	setroom(0, 0)
 end
 __gfx__
