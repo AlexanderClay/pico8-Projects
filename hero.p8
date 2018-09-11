@@ -8,6 +8,8 @@ __lua__
 
 	sfx20-25 shoot
 	
+	sfx40 - object move
+	
  sfx56 - message / text
  sfx57 - danger
  sfx58 - heal
