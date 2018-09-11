@@ -326,6 +326,8 @@ function fire(dir)
 	b.dx=dir*0.3
 	b.tag="pl"
 	pl.cool = pl.g.cool
+	
+ pl.gdir=dir+0.1
 	sfx(pl.g.sfx, 3)
 end
 function _update()
@@ -353,7 +355,7 @@ end
 
 function draw_actor(a)
 	if (a.active) then
-		local dim = vec2(a.sprsw*0.5*a.dir, a.sprsh*0.5)
+		local dim = vec2(a.dir*a.sprsw*0.5, a.sprsh*0.5)
 		
 		local sx = (a.x * 8-mapx*128) - dim.x
   local sy = (a.y * 8-mapy*128) - dim.y
@@ -498,12 +500,13 @@ function _init()
  pl.yhp=0
  pl.gdir=1
  pl.update = function()
- 
+ 	--[[
  	if(pl.dx > 0.03) then
  	 pl.gdir=-1
  	 elseif (pl.dx < -0.03) then
  	 pl.gdir=1.1
 		end
+		]]
  	pl.dir = lerp(pl.dir, pl.gdir, 0.5)
  end
  add(solid_actors, pl)
