@@ -31,6 +31,7 @@ layer 2 = complex actors such as player
 
 ]]
 
+keys1 = {}
 use_actors = {}
 solid_actors = {}
 actor = {} --all actors in world
@@ -85,6 +86,26 @@ function make_item(x, y)
  obj.w=0.1
  obj.h=0.1
  obj.moveable = 0.2
+ obj.active=true
+ obj.update=function()
+ 	if (abs(obj.dx)+abs(obj.dy) > 0.005) then
+   sfx(40, 2)
+  end
+ end
+ add(use_actors, obj)
+ add(solid_actors, obj)
+
+ return obj
+end
+
+function make_door(x, y)
+ local obj=make_actor(x,y)
+ obj.active=true
+ obj.uw = 1 -- use-width
+ obj.uh = 1
+ obj.w=0.5
+ obj.h=0.5
+ obj.moveable = 0
  obj.active=true
  obj.update=function()
  	if (abs(obj.dx)+abs(obj.dy) > 0.005) then
@@ -574,6 +595,7 @@ function _init()
  pl = make_actor(103,52)
  pl.active=true
  pl.spr = 1
+ pl.gdir=1
  pl.sprw = 8
  pl.sprh = 8
  pl.layer = 2
@@ -583,7 +605,8 @@ function _init()
  pl.hp=100
  pl.badhp=0
  pl.yhp=0
- pl.gdir=1
+ pl.haskey1=false
+ pl.haskey2=false
  pl.update = function()
  	--[[
  	if(pl.dx > 0.03) then
@@ -622,8 +645,7 @@ function setroom(x,y)
     	enmy1.sprsw = 8 + sin(enmy1.x*0.8)
     	enmy1.sprsh = 8 + sin(enmy1.y)
     end
-	 	end
-	 	if(mget(tx,ty)==64) then
+	 	elseif(mget(tx,ty)==64) then
 	 		mset(tx,ty, 0)
 	 		sfx(60,0)
  	 	chase = make_actor(tx,ty)
@@ -650,10 +672,10 @@ function setroom(x,y)
     	--chase.x = move2(chase.x,pl.x,0.1)
     	--chase.y = move2(chase.y,pl.y,0.1)
     end
-	 	end
+    
 	 	-- key1
 	 	
-	 	if(mget(tx,ty)==52) then
+	 	elseif(mget(tx,ty)==52) then
 	 		mset(tx,ty, 0)
     local k1=make_item(tx+0.5,ty+0.5)
     k1.name=" press 'e' to pickup key"
@@ -664,13 +686,63 @@ function setroom(x,y)
     	del(actor, k1)
     	del(use_actors, k1)
    	 del(solid_actors, k1)
+   	 pl.haskey1=true
    	 k1=nil
     	msg1="you picked up the cyan\nkey.\n\nnow, hurry back!"
     	msg2=""
     end
-	 	end
+    
+   --key2
+	 	elseif(mget(tx,ty)==53) then
+	 		mset(tx,ty, 0)
+    local k1=make_item(tx+0.5,ty+0.5)
+    k1.name=" press 'e' to pickup key"
+    k1.spr = 52
+    k1.use = function()
+    	paused=true
+    	sfx(10,1)
+    	del(actor, k1)
+    	del(use_actors, k1)
+   	 del(solid_actors, k1)
+   	 pl.haskey2=true
+   	 k1=nil
+    	msg1="you picked up the yellow \nkey.\n\nnow, hurry back!"
+    	msg2=""
+    end
+    
+	 	-- door1
+	 	
+	 	elseif(mget(tx,ty)==50) then
+	 		mset(tx,ty, 0)
+    local k1=make_door(tx+0.5,ty+0.5)
+    k1.name="press 'e' to open door"
+    k1.spr = 50
+    add(keys1,k1)
+    k1.use = function()
+    	paused=true
+    	if(pl.haskey1) then
+     	sfx(10,1)
+    	 foreach(keys1, function(obj)
+    	 	
+      	del(actor, obj)
+      	del(use_actors, obj)
+     	 del(solid_actors, obj)
+    	 	del(keys1, obj)
+    	 	obj=nil
+     	end)
+    	 msg1="you twist and shake the key in the\nrusty keyhole...\n\nit unlocks eventually after some effort!"
+    		msg2="door unlocked"
+    	 k1=nil
+    	else
+    		sfx(23,1)
+    	 msg1="the door wont budge."
+    		msg2=""
+    	 k1=nil
+    	end
+    end
+    
 	 	-- gun1
-	 	if(mget(tx,ty)==21) then
+	 	elseif(mget(tx,ty)==21) then
 	 		mset(tx,ty, 0)
     local g1=make_item(tx+0.5,ty+0.5)
     g1.name="press 'e' to pickup pistol"
@@ -686,9 +758,9 @@ function setroom(x,y)
     	msg1="you found a pistol left\nfrom a previous police op."
     	msg2=" press a and d to shoot"
     end
-	 	end
+    
 	 	-- gun2
-	 	if(mget(tx,ty)==22) then
+	 	elseif(mget(tx,ty)==22) then
 	 		mset(tx,ty, 0)
     local g1=make_item(tx+0.5,ty+0.5)
     g1.name="press 'e' to pickup rifle"
@@ -704,10 +776,10 @@ function setroom(x,y)
     	msg1="you got a 1935 rilfe\ninfused with\nteleportation magic."
     	msg2=""
     end
-	 	end
+    
 	 	
 	 	--car
-	 	if(mget(tx,ty)==56) then
+	 	elseif(mget(tx,ty)==56) then
 	 		mset(tx,ty, 0)
     local car=make_item(tx+0.5,ty+0.5)
     car.name="  press 'e' to use car"
@@ -822,7 +894,7 @@ ee0e0000188100000cccccc00333333000c0c00000a0a00000000000000000000c00000000000000
 20000000000000000000000000000020200000000000000000000000000000202000000000000000000000000000002020000000000000000000000000000020
 20000000000000000000000000000020200000000000000000000000000000202000000000000000000000000000002020000000000000000000000000000020
 20000000000000000000000000000020200000000000000000000000000000202000000000000000000000000000002020000000000000000000000000000020
-20000000000000000000000000000020200000000000000000000000000000202000000000000000000000000000002020000000000000000000000000000020
+20000000000000000000000000000020200000000000000000000000000000202000000000000000000061000000002020000000000000000000000000000020
 20000000000000000000000000000020200000000000000000000000000000202000000000000000000000000000002020000000000000000000000000000020
 20000000000000000000000000000020200000000000000000000000000000202000000000000000000000000000002020000000000000000000000000000020
 20000000000000000000008300000020200000000000000000000083000000202000000000000000000000830000002020000000000000000000008300000020
