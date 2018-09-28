@@ -31,6 +31,7 @@ layer 2 = complex actors such as player
 
 ]]
 
+
 keys1 = {}
 use_actors = {}
 solid_actors = {}
@@ -796,6 +797,27 @@ function setroom(x,y)
 	end
 end
 
+-->8
+
+--[[
+todo list
+ my favorite enemy design in games is half-life because it combines hitscan enemies, aggressive enemies, projectile enemies, in a verity of different distances and covers
+
+gun-shotgun: one shot or two shots with longer delay
+gun-rifle, must rotate 360 to arm
+
+- you lost your firing arm and cannot use two handed weapons (duct-tape one of your two handed weapons to be able to use the others)
+- you lost your left eye
+- you broke your shooting arm (health -1 on every shot) > proceed
+- you manually fixed your broken fingers by stretching them.
+- you broke your fingers. seek help (aim -1) > proceed
+- smoking cigerattes and painkillers to increase health
+- health never heals to 100%
+- kar98 reloads by spinning 360 degrees
+
+- ending based on health status: you saved the world, becoming a crippled, heroin addict, anxiety filled mess, depressed in the process. / your legs gave out, bounding you to a wheelchair for the rest of your life. / you can't use your arms anymore. i / you suicided when no employer would hire me / you. your heroic encounters with the monsters left your face horrifyingly disfigured, bounding you to low-paying, blue-collar jobs for the rest of your life, as children sing lullibies about how ugly you look.
+
+]]
 __gfx__
 0000000000777700777777777777777700000000888e0000bbb30000000000000000000000000000888e00000077770000000000000000000000000000000000
 0000000007000070777777777000000700000000080800000b0b0000000000000000000000000000080800000777777000777700007777000077770000777700
