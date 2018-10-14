@@ -3,11 +3,27 @@ version 16
 __lua__
 --[[
 
+	ideas: chaer, sanity, text minigames, car driving
+	
+	enemy ideas:
+ 	hostile vs reacts to player
+ 	aggressive vs slow/smart
+ 	projectile vs hitscan/fast bullet
+ 	melee vs ranged
+	
+	weapon ideas:
+ 	lots of ammo vs no ammo
+ 	hurts player vs doesn't
+ 	slow vs fast
+ 	spreads vs accurate
+ 	projectile vs hitscan/fast bullet
+ 	melee vs ranged vs sniper
+
 	sfx channels
-	0 music
-	1	gun
-	2 enemies
-	3 player actions (walk, use)
+	0 music - player use / inturrpt music
+	1	enemy
+	2 footsteps
+	3 gun 
 
  layer 1 = bullets
  layer 2 = complex actors such as player
