@@ -801,7 +801,7 @@ function()
 	sfx(2)
 end,
 --6
-"as my soul escaped my body,\nall of my senses fade one by\none... \n\nsight...\n\nsound...\n\ntaste...\n\ntouch...\n\ni can almost feel one scent:\nwhite jasmine.",
+"as my soul escaped my body,\nall of my senses fade one by\none... \n\nsight...\n\nsound...\n\ntaste...\n\ntouch...\n\nbut i no longer wondered what\ndeath smells like.",
 "close eyes",
 function()
 	select_menu=false
