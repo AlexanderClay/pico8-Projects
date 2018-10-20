@@ -462,7 +462,7 @@ function _draw()
   	end
 	 end
 	 
-	 if (dying_anim > 14 and dying_anim < 30) then
+	 if (dying_anim > 14 and dying_anim < 31) then
   	for x=1,128 do
   		for y=1,128 do
   			pset(x,y,sub(img,x+y*128,x+y*128+1))
@@ -790,12 +790,19 @@ gun-rifle, must rotate 360 to arm
 story={
 --1
 "our planet will die in one\nhour... engulfed by\na toxic gas.\n\nno time to cry! i can use\nforbidden incantations to delay\nthe world's end for a few hours\nbut i must act now.\n\n\n(press ⬆️⬇️ and 'x' to select\noption)",
+--[[
 "shoot self",
 function()
 	select_menu=false
 	dying=true
 	dying_anim=1
 	sfx(23)
+]]
+
+"take off mask",
+function()
+	story_index=6
+	sfx(2)
 end,
 "begin journey",
 function()
