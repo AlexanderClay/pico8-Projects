@@ -8,16 +8,19 @@ actors = {}
 function _init()
 	pl=make_actor(63,63)
 	pl.spr=4
-	pl.vy=0.1
+	
+	pl.ay=0.5
 end
 
 function make_actor(x,y)
 	a = {}
 	a.x=x
 	a.y=y
-	a.dx=0
-	a.dy=0
-	a.vx=0
+	a.sx=0.125 --scale
+	a.sy=0.125
+	a.ax=0					--acceleration
+	a.ay=0
+	a.vx=0					--velocity
 	a.vy=0
 	a.spr = 1
 	
@@ -33,31 +36,34 @@ function col_map(celx,cely,w,h)
 	or fget(mget(celx,cely-h))==2) then
 		return true
 	end
+	return false
 end
 
 function update_actor(a)
 	
-	a.dx+=a.vx
-	a.dy+=a.vy
-	a.x+=a.dx
+	a.vx+=a.ax
+	a.vy+=a.ay
+	a.x+=a.vx
+	a.y+=a.vy
 	
-	if(fget(mget(a.x/8,(a.y-1)/8),1)) then
+	if(col_map(a.x,a.y,a.sx,a.sy)) then
 		
 		a.y=16
-		a.vy=-a.vy
-		debug=a.dy
+		a.vy=-a.ay
+		debug=a.vy
 	else
-		debug=a.dy
-		a.y+=a.dy
+		debug=a.vy
+		a.y+=a.vy
 	end
 end
 function draw_actor(a)
-	
 	spr(a.spr, a.x, a.y)
 end
 
 function _draw()
 	cls()
+	
+	circ(pl.x, pl.y, 15, 12)
 	map(0,0,0,0,16,16)
 	foreach(actors, draw_actor)
 	
