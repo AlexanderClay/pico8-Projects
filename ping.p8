@@ -9,7 +9,7 @@ function _init()
 	pl=make_actor(63,63)
 	pl.spr=4
 	
-	pl.ay=0.5
+	pl.ay=0.1
 end
 
 function make_actor(x,y)
@@ -30,13 +30,16 @@ function make_actor(x,y)
 end
 
 function col_map(celx,cely,w,h)
-	if(fget(mget(celx+w,cely))==2
-	or fget(mget(celx-w,cely))==2
-	or fget(mget(celx,cely+h))==2
-	or fget(mget(celx,cely-h))==2) then
+	
+	celx=celx/8
+	cely=cely/8
+	if(fget(mget(celx+0.5,cely),1)
+	or fget(mget(celx-0.5,cely),1)
+	or fget(mget(celx,cely+0.5),1)
+	or fget(mget(celx,cely-0.5),1)) then
 		return true
 	end
-	return false
+		return false
 end
 
 function update_actor(a)
@@ -48,11 +51,8 @@ function update_actor(a)
 	
 	if(col_map(a.x,a.y,a.sx,a.sy)) then
 		
-		a.y=16
 		a.vy=-a.ay
-		debug=a.vy
 	else
-		debug=a.vy
 		a.y+=a.vy
 	end
 end
