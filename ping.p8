@@ -4,13 +4,9 @@ __lua__
 debug=""
 
 actors = {}
-
-function _init()
-	pl=make_actor(63,63)
-	pl.spr=4
-	
-	pl.ay=0.1
-end
+xpressed=false
+xpressedcount=0
+plpower=0
 
 function make_actor(x,y)
 	a = {}
@@ -55,6 +51,10 @@ function update_actor(a)
 	else
 		a.y+=a.vy
 	end
+	
+	if(a.update != nil) then
+		a.update()
+	end
 end
 function draw_actor(a)
 	spr(a.spr, a.x, a.y)
@@ -63,7 +63,10 @@ end
 function _draw()
 	cls()
 	
-	circ(pl.x, pl.y, 15, 12)
+	if(btn(4,0) or btn(5,0))then
+		circ(pl.x, pl.y, plpower, 12)
+	end
+	
 	map(0,0,0,0,16,16)
 	foreach(actors, draw_actor)
 	
@@ -71,12 +74,78 @@ function _draw()
 end
 
 function _update()
-
+	
+	if(btn(0,0))then
+		cross.offset.x-=1
+	elseif(btn(1,0))then
+		cross.offset.x+=1
+	end
+	if(btn(2,0))then
+		cross.offset.y-=1
+	elseif(btn(3,0))then
+		cross.offset.y+=1
+	end
+	
+	
+	if(btn(4,0) or btn(5,0))then
+		if(xpressed ==false) then
+			xpressed=true
+			xpressedcount=1
+			plpower=0
+		end
+		if(xpressedcount < 30) then
+			xpressedcount+=1
+		end
+		
+ 	plpower = xpressedcount
+		else
+		xpressed=false
+	end
 	foreach(actors, update_actor)
  
 end
 
 -->8
+
+vec2 = function(x,y)
+	tmp = {
+ 	x=x,
+ 	y=y
+	}
+	return tmp
+	end
+function length(v)
+	local d=max(abs(v[1]),abs(v[2]))
+	local n=max(abs(v[1]),abs(v[2])) / d
+	return sqrt(n*n+1)*d
+end
+
+function normalize(v)
+	debug = v.x
+	l = length(v)
+	v = vec2(v.x/l, v.y/l)
+	
+	return v
+end
+
+function clamp_arcade_v2(v,max_x,max_y)
+	if(abs(v.x) > abs(max_x)) then
+	 if(v.x>0) then
+	 	v.x = max_x
+	 else
+	 	v.x = -max_x
+	 end
+	 
+	end
+	if(abs(v.y) > abs(max_y)) then
+		if(v.y>0) then
+	 	v.y = max_y
+	 else
+	 	v.y = -max_y
+	 end
+	end
+	return v
+end
 
 function lerp(a, b, t)
 	return a + t * (b-a)
@@ -87,16 +156,42 @@ function move2(a, b, s)
 	else return a+s end
 end
 
+function text_dance(text, x, y, col)
+	for i=0,text.len do
+		print(text[i],x+i*4, y+cos(i), col)
+	end
+end
 function textshadow(text, x, y, col)
 	print (text, x-1, y+1, 0) -- shadow
 	print (text, x, y, col) -- main
 end
+
+-->8
+
+function _init()
+	pl=make_actor(63,63)
+	pl.spr=4
+	
+	pl.ay=0.1
+	
+	cross=make_actor(63,63)
+	cross.spr=5
+	cross.offset=vec2(4,0)
+	local norm_offset
+	cross.update = function()
+		cross.x=pl.x+cross.offset.x
+		cross.y=pl.y+cross.offset.y
+		norm_offset = normalize(cross.offset)
+		cross.offset = vec2(norm_offset.x * plpower, norm_offset.y * plpower)
+		
+	end
+end
 __gfx__
-00000000007777007777777777777777700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000070000707777777770000007000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000700776077777777770000007000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000707007077777777770000007000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000707007077777777770000007000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000007777007777777777777777c0000000cc00000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000070000707777777770000007000000000cc0000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000007007760777777777700000070000000000cc000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000707007077777777770000007000000000cc0000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000070700707777777777000000700000000cc00000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000700777707777777770000007000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000070000007777777770000007000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000007777007777777777777777000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
