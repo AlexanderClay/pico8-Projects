@@ -4,7 +4,7 @@ __lua__
 debug=""
 
 actors = {}
-xpressed=false
+xjustreleased=false
 xpressedcount=0
 plpower=0
 
@@ -18,6 +18,8 @@ function make_actor(x,y)
 	a.ay=0
 	a.vx=0					--velocity
 	a.vy=0
+	a.dx=0.9					--drag
+	a.dy=0.9
 	a.spr = 1
 	
 	add(actors,a)
@@ -25,31 +27,27 @@ function make_actor(x,y)
 	return a
 end
 
-function col_map(celx,cely,w,h)
-	
-	celx=celx/8
-	cely=cely/8
-	if(fget(mget(celx+0.5,cely),1)
-	or fget(mget(celx-0.5,cely),1)
-	or fget(mget(celx,cely+0.5),1)
-	or fget(mget(celx,cely-0.5),1)) then
-		return true
-	end
-		return false
+function solid(x,y)
+	cel=mget(x,y)
+	return fget(cel,1)
+
 end
 
 function update_actor(a)
+	a.vx*=a.dx
+	a.vx*=a.dy
 	
 	a.vx+=a.ax
 	a.vy+=a.ay
-	a.x+=a.vx
-	a.y+=a.vy
 	
-	if(col_map(a.x,a.y,a.sx,a.sy)) then
+	
+	if(solid(a.x/8+a.vx,a.y/8+a.vy)== false) then
 		
-		a.vy=-a.ay
-	else
+		a.x+=a.vx
 		a.y+=a.vy
+	else
+		a.vx=0
+		a.vy=0
 	end
 	
 	if(a.update != nil) then
@@ -87,19 +85,17 @@ function _update()
 	end
 	
 	
-	if(btn(4,0) or btn(5,0))then
-		if(xpressed ==false) then
-			xpressed=true
-			xpressedcount=1
-			plpower=0
-		end
-		if(xpressedcount < 30) then
-			xpressedcount+=1
-		end
+	if(btn(5,0))then
+ 	if(xpressedcount < 30) then
+ 		xpressedcount+=1
+ 	end
 		
  	plpower = xpressedcount
-		else
-		xpressed=false
+	end
+	if(btn(5,0)==false and xpressedcount > 0) then
+ 	pl.vy = cross.offset.y * 0.2
+ 	xpressedcount=0
+ 	plpower=0
 	end
 	foreach(actors, update_actor)
  
@@ -114,19 +110,7 @@ vec2 = function(x,y)
 	}
 	return tmp
 	end
-function length(v)
-	local d=max(abs(v[1]),abs(v[2]))
-	local n=max(abs(v[1]),abs(v[2])) / d
-	return sqrt(n*n+1)*d
-end
 
-function normalize(v)
-	debug = v.x
-	l = length(v)
-	v = vec2(v.x/l, v.y/l)
-	
-	return v
-end
 
 function clamp_arcade_v2(v,max_x,max_y)
 	if(abs(v.x) > abs(max_x)) then
@@ -171,19 +155,19 @@ end
 function _init()
 	pl=make_actor(63,63)
 	pl.spr=4
-	
-	pl.ay=0.1
+	pl.update = function()
+		pl.ay=0.1
+	end
 	
 	cross=make_actor(63,63)
 	cross.spr=5
 	cross.offset=vec2(4,0)
-	local norm_offset
+
 	cross.update = function()
 		cross.x=pl.x+cross.offset.x
 		cross.y=pl.y+cross.offset.y
-		norm_offset = normalize(cross.offset)
-		cross.offset = vec2(norm_offset.x * plpower, norm_offset.y * plpower)
 		
+		cross.offset=clamp_arcade_v2(cross.offset, plpower*0.7, plpower*0.7)
 	end
 end
 __gfx__
