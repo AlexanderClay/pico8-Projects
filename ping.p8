@@ -101,9 +101,13 @@ function solid_a(a, vx, vy)
 end
 
 
-function move_actor(a)
+function update_actor(a)
 
 	if (a.active) then
+		
+		if(a.update != nil) then
+			a.update()
+		end
   -- only move actor along x
   -- if the resulting position
   -- will not overlap with a wall
@@ -149,18 +153,6 @@ end
 
 function _update()
 	
-	if(btn(0,0))then
-		cross.offset.x-=1
-	elseif(btn(1,0))then
-		cross.offset.x+=1
-	end
-	if(btn(2,0))then
-		cross.offset.y-=1
-	elseif(btn(3,0))then
-		cross.offset.y+=1
-	end
-	
-	
 	if(btn(5,0))then
  	if(xpressedcount < 30) then
  		xpressedcount+=1
@@ -174,7 +166,7 @@ function _update()
  	plpower=0
 	end
 	
-	foreach(actors, move_actor)
+	foreach(actors, update_actor)
  
 end
 
@@ -239,8 +231,20 @@ function _init()
 	cross=make_actor(63,63)
 	cross.spr=5
 	cross.offset=vec2(4,0)
-
+	
 	cross.update = function()
+		
+ 	if(btn(0,0))then
+ 		cross.offset.x-=1
+ 	elseif(btn(1,0))then
+ 		cross.offset.x+=1
+ 	end
+ 	if(btn(2,0))then
+ 		cross.offset.y-=1
+ 	elseif(btn(3,0))then
+ 		cross.offset.y+=1
+ 	end
+ 
 		cross.x=pl.x+cross.offset.x
 		cross.y=pl.y+cross.offset.y
 		
