@@ -30,9 +30,11 @@ end
 
 
 function solid(x, y)
-
+	
+	celx=x/8
+	cely=y/8
  -- grab the cell value
- val=mget(x, y)
+ val=mget(celx, cely)
  
  -- check if flag 1 is set (the
  -- orange toggle button in the 
@@ -43,7 +45,7 @@ end
 
 
 function solid_area(x,y,w,h)
-
+	
  return 
   solid(x-w,y-h) or
   solid(x+w,y-h) or
@@ -114,6 +116,7 @@ function update_actor(a)
  
   if not solid_a(a, a.vx, 0) 
   then
+   a.vx += a.ax
    a.x += a.vx
   end
  
@@ -121,9 +124,9 @@ function update_actor(a)
  
   if not solid_a(a, 0, a.vy)
   then
+   a.vy += a.ay
    a.y += a.vy
   end
-  
   -- apply drag
   -- set dx,dy to zero if you
   -- don't want drag
@@ -141,6 +144,7 @@ end
 function _draw()
 	cls()
 	
+	// draw circle
 	if(btn(4,0) or btn(5,0))then
 		circ(pl.x, pl.y, plpower, 12)
 	end
@@ -153,6 +157,7 @@ end
 
 function _update()
 	
+	// shoot player
 	if(btn(5,0))then
  	if(xpressedcount < 30) then
  		xpressedcount+=1
@@ -161,6 +166,7 @@ function _update()
  	plpower = xpressedcount
 	end
 	if(btn(5,0)==false and xpressedcount > 0) then
+ 	pl.vx = cross.offset.x * 0.2
  	pl.vy = cross.offset.y * 0.2
  	xpressedcount=0
  	plpower=0
@@ -225,7 +231,7 @@ function _init()
 	pl=make_actor(63,63)
 	pl.spr=4
 	pl.update = function()
-		pl.ay=0.1
+		pl.ay=0.2
 	end
 	
 	cross=make_actor(63,63)
@@ -234,10 +240,17 @@ function _init()
 	
 	cross.update = function()
 		
+		if(abs(cross.offset.x) < 0.01
+		and abs(cross.offset.y) < 0.01) then
+			cross.spr=0
+		else
+			cross.spr=5
+		end
+		
  	if(btn(0,0))then
- 		cross.offset.x-=1
+ 		cross.offset.x-=3
  	elseif(btn(1,0))then
- 		cross.offset.x+=1
+ 		cross.offset.x+=3
  	end
  	if(btn(2,0))then
  		cross.offset.y-=1
